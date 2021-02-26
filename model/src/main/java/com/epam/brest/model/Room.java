@@ -1,5 +1,7 @@
 package com.epam.brest.model;
 
+import java.util.Objects;
+
 public class Room {
 
     private Integer roomId;
@@ -55,5 +57,18 @@ public class Room {
                 ", countOfPlaces=" + countOfPlaces +
                 ", roomClass='" + roomClass + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Room room = (Room) o;
+        return Objects.equals(roomId, room.roomId) && Objects.equals(roomNumber, room.roomNumber) && Objects.equals(countOfPlaces, room.countOfPlaces) && Objects.equals(roomClass, room.roomClass);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(roomId, roomNumber, countOfPlaces, roomClass);
     }
 }

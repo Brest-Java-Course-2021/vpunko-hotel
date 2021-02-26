@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -22,18 +23,28 @@ public class RoomDaoJdbcTest {
 
     @Test
     public void findAllTest() {
+        List<Room> roomList = roomDao.findAll();
+        Assert.assertNotNull(roomList);
+        Assert.assertTrue(roomList.size() > 0);
+    }
 
+    @Test
+    public void findByIdTest() {
         List<Room> roomList = roomDao.findAll();
         Assert.assertNotNull(roomList);
         Assert.assertTrue(roomList.size() > 0);
 
+        Integer roomId = roomList.get(0).getRoomId();
+        Room expertRoom = roomDao.findById(roomId).get();
+        Assert.assertEquals(roomId, expertRoom.getRoomId());
+        Assert.assertEquals(roomList.get(0).getRoomNumber(), expertRoom.getRoomNumber());
+        Assert.assertEquals(roomList.get(0), expertRoom);
     }
 
-    @Test
-    public void createRoomTest() {
-
-        boolean isCreateRoom = roomDao.createRoom();
-        Assert.assertTrue("Did the room add?", isCreateRoom);
+    @Test(expected = EmptyResultDataAccessException.class)
+    public void findByIdExceptionTest() {
+        Room expertRoom = roomDao.findById(999).get();
 
     }
+
 }
