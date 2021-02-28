@@ -5,6 +5,8 @@ import com.epam.brest.model.Room;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,11 +14,14 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
 
+
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:test-db.xml", "classpath*:test-dao.xml"})
 public class RoomDaoJdbcTest {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RoomDaoJdbcTest.class);
 
     @Autowired
     private RoomDao roomDao;
@@ -44,6 +49,15 @@ public class RoomDaoJdbcTest {
     @Test(expected = EmptyResultDataAccessException.class)
     public void findByIdExceptionTest() {
         Room expertRoom = roomDao.findById(999).get();
+    }
+
+    @Test
+    public void testLogging() {
+        LOGGER.trace("hello trace");
+        LOGGER.debug("hello debug");
+        LOGGER.info("hello info");
+        LOGGER.warn("hello warn");
+        LOGGER.error("hello error");
 
     }
 
