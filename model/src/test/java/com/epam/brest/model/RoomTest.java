@@ -9,7 +9,7 @@ public class RoomTest {
 
     @Test
     public void getRoomNumberConstructor() {
-        Room room = new Room(110);
+        Room room = new Room(110, 1, "Medium");
         Assert.assertEquals((Integer) 110, room.getRoomNumber());
     }
 

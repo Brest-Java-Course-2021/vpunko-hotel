@@ -13,8 +13,10 @@ public class Room {
     public Room() {
     }
 
-    public Room(Integer roomNumber) {
+    public Room(Integer roomNumber, Integer countOfPlaces, String roomClass) {
         this.roomNumber = roomNumber;
+        this.countOfPlaces = countOfPlaces;
+        this.roomClass = roomClass;
     }
 
     public Integer getRoomId() {

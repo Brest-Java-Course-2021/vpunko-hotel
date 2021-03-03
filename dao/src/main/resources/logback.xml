@@ -20,7 +20,7 @@
 
     <logger name="com.epam" level="TRACE">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="ToFile" />
+<!--        <appender-ref ref="ToFile" />-->
     </logger>
 
 <!--    <root level="DEBUG">-->

@@ -52,6 +52,19 @@ public class RoomDaoJdbcTest {
     }
 
     @Test
+    public void createRoomTest(){
+        List<Room> rooms = roomDao.findAll();
+        Assert.assertNotNull(rooms);
+        Assert.assertTrue(rooms.size()>0);
+
+        Room room = new Room(102, 2, "Cheap");
+        roomDao.create(room);
+
+        List<Room> realRoom = roomDao.findAll();
+        Assert.assertEquals(rooms.size() + 1, realRoom.size());
+    }
+
+    @Test
     public void testLogging() {
         LOGGER.trace("hello trace");
         LOGGER.debug("hello debug");
