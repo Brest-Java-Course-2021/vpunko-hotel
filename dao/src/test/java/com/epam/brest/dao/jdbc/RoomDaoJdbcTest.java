@@ -8,11 +8,13 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.List;
+import java.util.Optional;
 
 
 import static org.junit.Assert.*;
@@ -57,12 +59,51 @@ public class RoomDaoJdbcTest {
         Assert.assertNotNull(rooms);
         Assert.assertTrue(rooms.size()>0);
 
-        Room room = new Room(102, 2, "Cheap");
-        roomDao.create(room);
+        roomDao.create(new Room(103, 2, "Cheap"));
 
         List<Room> realRoom = roomDao.findAll();
         Assert.assertEquals(rooms.size() + 1, realRoom.size());
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void createRoomWithSameNumberTest(){
+        List<Room> rooms = roomDao.findAll();
+        Assert.assertNotNull(rooms);
+        Assert.assertTrue(rooms.size()>0);
+
+        roomDao.create(new Room(102, 2, "Cheap"));
+        roomDao.create(new Room(102, 2, "Cheap"));
+
+//        List<Room> realRoom = roomDao.findAll();
+//        Assert.assertEquals(rooms.size() + 1, realRoom.size());
+    }
+
+    @Test
+    public void UpdateRoomTest(){
+        List<Room> rooms = roomDao.findAll();
+        Assert.assertNotNull(rooms);
+        Assert.assertTrue(rooms.size()>0);
+
+        Room room = rooms.get(0);
+        room.setCountOfPlaces(1);
+        roomDao.update(room);
+
+        Optional<Room> realRoom = roomDao.findById(room.getRoomId());
+        Assert.assertEquals((Integer) 1,realRoom.get().getCountOfPlaces());
+    }
+
+    @Test
+    public void deleteRoomTest(){
+        List<Room> rooms = roomDao.findAll();
+        Assert.assertNotNull(rooms);
+        Assert.assertTrue(rooms.size()>0);
+
+        roomDao.delete(rooms.get(0).getRoomId());
+
+        List<Room> realRoom = roomDao.findAll();
+        Assert.assertEquals(rooms.size() - 1, realRoom.size());
+    }
+
 
     @Test
     public void testLogging() {

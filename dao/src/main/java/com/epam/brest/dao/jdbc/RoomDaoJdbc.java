@@ -24,11 +24,17 @@ public class RoomDaoJdbc implements RoomDao {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RoomDaoJdbc.class);
 
-    private static final String SQL_GET_ALL_ROOMS = "select * from ROOM as R ORDER BY R.Room_Number";
+    private static final String SQL_GET_ALL_ROOMS = "select * from ROOM as R ORDER BY R.ROOM_NUMBER";
     private static final String SQL_GET_BY_ID_ROOMS = "select * from ROOM as R where R.ROOM_ID = :ROOM_ID";
-    private static final String SQL_CREATE_ROOMS = "INSERT INTO ROOM (Room_Number, Count_Of_Places, Room_Class ) " +
-            "VALUES (:Room_Number, :Count_Of_Places, :Room_Class)";
-//            "VALUES (?, ?, ? )";
+    private static final String SQL_CREATE_ROOMS = "INSERT INTO ROOM (ROOM_NUMBER, COUNT_OF_PLACES, ROOM_CLASS ) " +
+            "VALUES (:ROOM_NUMBER, :COUNT_OF_PLACES, :ROOM_CLASS)";
+    private static final String SQL_CHECK_ROOM_NUMBER = "select COUNT(ROOM_ID) from ROOM WHERE " +
+            "ROOM_NUMBER = :ROOM_NUMBER";
+    private static final String SQL_UPDATE_ROOMS = "UPDATE ROOM " +
+            "SET COUNT_OF_PLACES = :COUNT_OF_PLACES WHERE ROOM_ID = :ROOM_ID";
+    private static final String SQL_DELETE_ROOMS = "DELETE FROM ROOM WHERE ROOM_ID = :ROOM_ID";
+
+
 
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -55,27 +61,44 @@ public class RoomDaoJdbc implements RoomDao {
 
     @Override
     public Integer create(Room room) {
+        long startTime = System.nanoTime();
         LOGGER.debug("Create room: {}", room);
-//        KeyHolder keyHolder = new GeneratedKeyHolder();
+        if(!isRoomNumberUnique(room)) {
+            LOGGER.warn("Room with the same name already exists in DB: {}", room);
+            throw new IllegalArgumentException("Room with the same number that already exist in DB");
+        }
+        KeyHolder keyHolder = new GeneratedKeyHolder();
         SqlParameterSource sqlParameterSource =
-                new MapSqlParameterSource("Room_Number", room.getRoomNumber())
-                        .addValue("Count_Of_Places", room.getCountOfPlaces())
-                        .addValue("Room_Class", room.getRoomClass());
-//        namedParameterJdbcTemplate.update(SQL_CREATE_ROOMS, sqlParameterSource,keyHolder);
-//        return Objects.requireNonNull(keyHolder.getKey()).intValue();
-        return namedParameterJdbcTemplate.update(SQL_CREATE_ROOMS, sqlParameterSource);
+                new MapSqlParameterSource("ROOM_NUMBER", room.getRoomNumber())
+                        .addValue("COUNT_OF_PLACES", room.getCountOfPlaces())
+                        .addValue("ROOM_CLASS", room.getRoomClass());
+        namedParameterJdbcTemplate.update(SQL_CREATE_ROOMS, sqlParameterSource, keyHolder);
+        Integer roomId = Objects.requireNonNull(keyHolder.getKey()).intValue();
+        room.setRoomId(roomId);
+        long endTime = System.nanoTime();
+        LOGGER.debug("Execution time: {}", endTime - startTime);
+        return roomId;
+    }
 
+    private boolean isRoomNumberUnique(Room room) {
+        return namedParameterJdbcTemplate.queryForObject(SQL_CHECK_ROOM_NUMBER
+                , new MapSqlParameterSource("ROOM_NUMBER", room.getRoomNumber()), Integer.class) == 0;
     }
 
     @Override
     public Integer update(Room room) {
         LOGGER.debug("Update room: {}", room);
-        return null;
+        SqlParameterSource sqlParameterSource =
+                new MapSqlParameterSource("COUNT_OF_PLACES", room.getCountOfPlaces())
+                .addValue("ROOM_ID", room.getRoomId());
+        return namedParameterJdbcTemplate.update(SQL_UPDATE_ROOMS, sqlParameterSource);
     }
 
     @Override
     public Integer delete(Integer roomId) {
         LOGGER.debug("Delete room: {}", roomId);
-        return null;
+        SqlParameterSource sqlParameterSource =
+                new MapSqlParameterSource("ROOM_ID", roomId);
+        return namedParameterJdbcTemplate.update(SQL_DELETE_ROOMS, sqlParameterSource);
     }
 }
