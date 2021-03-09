@@ -9,11 +9,11 @@ public interface ApartmentService {
 
     List<Apartment> findAll();
 
-    Optional<Apartment> findById(Integer roomId);
+    Optional<Apartment> findById(Integer apartmentId);
 
     Integer create(Apartment apartment);
 
     Integer update(Apartment apartment);
 
-    Integer delete(Integer roomId);
+    Integer delete(Integer apartmentId);
 }
