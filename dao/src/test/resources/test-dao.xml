@@ -13,7 +13,7 @@
 
     </bean>
 
-    <bean id="roomDao" class="com.epam.brest.dao.jdbc.RoomDaoJdbc" >
+    <bean id="roomDao" class="com.epam.brest.dao.jdbc.ApartmentDaoJdbc" >
         <constructor-arg ref="namedParameterJdbcTemplate"/>
     </bean>
 
